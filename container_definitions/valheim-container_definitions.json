@@ -1,0 +1,106 @@
+[
+    {
+        "Name": "${valheim_name}",
+        "Image": "${valheim_image}",
+        "PortMappings": [
+            {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+            },
+            {
+                "ContainerPort": 2456,
+                "Protocol": "udp"
+            },
+            {
+                "ContainerPort": 2457,
+                "Protocol": "udp"
+            },
+            {
+                "ContainerPort": 2458,
+                "Protocol": "udp"
+            }
+        ],
+        "Environment": [
+            {
+                "Name": "PORT",
+                "Value": "2456"
+            },
+            {
+                "Name": "NAME",
+                "Value": "${valheim_name}"
+            },
+            {
+                "Name": "WORLD",
+                "Value": "${valheim_name}"
+            },
+            {
+                "Name": "PASSWORD",
+                "Value": "${valheim_pass}"
+            },
+            {
+                "Name": "TZ",
+                "Value": "America/Sao_Paulo"
+            },
+            {
+                "Name": "PUBLIC",
+                "Value": "1"
+            },
+            {
+                "Name": "AUTO_UPDATE",
+                "Value": "1"
+            },
+            {
+                "Name": "AUTO_UPDATE_SCHEDULE",
+                "Value": "0 1 * *"
+            },
+            {
+                "Name": "AUTO_BACKUP",
+                "Value": "1"
+            },
+            {
+                "Name": "AUTO_BACKUP_SCHEDULE",
+                "Value": "/15 * * * *"
+            },
+            {
+                "Name": "AUTO_BACKUP_REMOVE_OLD",
+                "Value": "1"
+            },
+            {
+                "Name": "AUTO_BACKUP_DAYS_TO_LIVE",
+                "Value": "3"
+            },
+            {
+                "Name": "AUTO_BACKUP_ON_UPDATE",
+                "Value": "1"
+            },
+            {
+                "Name": "AUTO_BACKUP_ON_SHUTDOWN",
+                "Value": "1"
+            },
+            {
+                "Name": "POST_BOOTSTRAP_HOOK",
+                "Value": "curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip' && unzip awscliv2.zip && ./aws/install && aws --version"
+            },
+            {
+                "Name": "PRE_SERVER_RUN_HOOK",
+                "Value": "aws s3 sync s3://${valheim_bucket}/worlds /config/worlds --delete"
+            },
+            {
+                "Name": "POST_SERVER_SHUTDOWN_HOOK",
+                "Value": "aws s3 sync /config/worlds s3://${valheim_bucket}/worlds --delete"
+            },
+            {
+                "Name": "POST_BACKUP_HOOK",
+                "Value": "aws s3 sync /config/backups s3://${valheim_bucket}/backups --delete"
+            }
+        ],
+        "LogConfiguration": {
+            "LogDriver": "awslogs",
+            "Options": {
+                "awslogs-region": "AWS::Region",
+                "awslogs-group": "LogGroup",
+                "awslogs-stream-prefix": "ecs"
+            }
+        }
+    }
+]
